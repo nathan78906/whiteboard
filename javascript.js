@@ -35,16 +35,17 @@ $('#canvas').mouseleave(function(e){
   paint = false;
 });
 
-var clickX = new Array();
-var clickY = new Array();
-var clickDrag = new Array();
-var paint;
-
 function addClick(x, y, dragging)
 {
   clickX.push(x);
   clickY.push(y);
   clickDrag.push(dragging);
+}
+
+function clearCanvas() {
+	context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+	clickX = [];
+	clickY = [];
 }
 
 function redraw(){
