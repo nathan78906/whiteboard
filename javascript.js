@@ -1,3 +1,11 @@
+var clickX = new Array();
+var clickY = new Array();
+var clickDrag = new Array();
+var paint;
+var erase;
+var draw = false;
+
+
 var canvasDiv = document.getElementById('canvasDiv');
 var canvasHeight = $(window).height();
 var canvasWidth = $(window).width();
@@ -6,6 +14,7 @@ canvas.setAttribute('width', canvasWidth);
 canvas.setAttribute('height', canvasHeight);
 canvas.setAttribute('id', 'canvas');
 canvasDiv.appendChild(canvas);
+
 if(typeof G_vmlCanvasManager != 'undefined') {
 	canvas = G_vmlCanvasManager.initElement(canvas);
 }
@@ -14,14 +23,19 @@ context = canvas.getContext("2d");
 $('#canvas').mousedown(function(e){
   var mouseX = e.pageX - this.offsetLeft;
   var mouseY = e.pageY - this.offsetTop;
-		
-  paint = true;
-  addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
-  redraw();
+  if (draw == true) {
+	paint = true;
+    addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
+    redraw();  
+  } else if (draw == false) {
+	paint = false;
+	removeClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
+    redraw();   
+  }
 });
 
 $('#canvas').mousemove(function(e){
-  if(paint){
+  if(paint == true){
     addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
     redraw();
   }
@@ -35,12 +49,6 @@ $('#canvas').mouseleave(function(e){
   paint = false;
 });
 
-var clickX = new Array();
-var clickY = new Array();
-var clickDrag = new Array();
-var paint;
-var erase;
-
 function addClick(x, y, dragging)
 {
   clickX.push(x);
@@ -48,10 +56,27 @@ function addClick(x, y, dragging)
   clickDrag.push(dragging);
 }
 
+function removeClick(x, y, dragging)
+{
+  delete clickX[x];
+  delete clickY[y];
+  delete clickDrag[dragging];
+}
+
 function clearCanvas() {
 	context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 	clickX = [];
 	clickY = [];
+	clickDrag = [];
+	draw = false;
+}
+
+function drawFunc() {
+	draw = true;
+}
+
+function erase() {
+	draw = false;
 }
 
 function redraw(){
