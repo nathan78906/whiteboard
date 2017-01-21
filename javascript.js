@@ -35,6 +35,12 @@ $('#canvas').mouseleave(function(e){
   paint = false;
 });
 
+var clickX = new Array();
+var clickY = new Array();
+var clickDrag = new Array();
+var paint;
+var erase;
+
 function addClick(x, y, dragging)
 {
   clickX.push(x);
