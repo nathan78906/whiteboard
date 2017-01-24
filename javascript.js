@@ -2,11 +2,9 @@ var drawButton = document.getElementById('drawButton');
 var eraseButton = document.getElementById('eraseButton');
 var clearButton = document.getElementById('clearButton');
 
-var indexX;
-var indexY;
 var indexDrag;
 var isErase = false;
-var isDraw = false;
+var isDraw = true;
 var isClear = false;
 
 var canvasHeight = $(window).height();
@@ -36,12 +34,12 @@ function addClick(x, y, dragging)
 }
 
 function removeClick(x , y, dragging){
-  indexX = clickX.indexOf(x);
-  indexY = clickY.indexOf(y);
+  var indexX = clickX.indexOf(x);
+  var indexY = clickY.indexOf(y);
   indexDrag = clickDrag.indexOf(dragging);
-  if (indexX == indexY){
-    delete clickX[indexX];
-    delete clickY[indexY];
+  if (indexX == indexY && indexX != -1){
+    clickX.splice(indexX, 1);
+    clickY.splice(indexY, 1);
     clickDrag.splice(indexDrag, 1);
   }
   
@@ -79,6 +77,14 @@ function draw(){
   isErase = false;
 }
 
+function clear(){
+  context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+  clickX = [];
+  clickY = [];
+  clickDrag = [];
+  isErase = false;
+}
+
 
 $('#canvas').mousedown(function(e){
   var mouseX = e.pageX - this.offsetLeft;
@@ -93,11 +99,12 @@ $('#canvas').mousedown(function(e){
 });
 
 $('#canvas').mousemove(function(e){
-  if(paint){
-    if (isErase == true){
-      removeClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
-    }else{
+  if(paint == true && isDraw == true){
+    if (isDraw == true){
       addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+    }
+    else if (isErase == true){
+      removeClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
     }
     redraw();
   }
