@@ -1,3 +1,17 @@
+var drawButton = document.getElementById('drawButton');
+var eraseButton = document.getElementById('eraseButton');
+var clearButton = document.getElementById('clearButton');
+
+var indexX;
+var indexY;
+var indexDrag;
+var isErase = false;
+var isDraw = false;
+var isClear = false;
+
+var canvasHeight = $(window).height();
+var canvasWidth = $(window).width();
+
 var canvasDiv = document.getElementById('canvasDiv');
 canvas = document.createElement('canvas');
 canvas.setAttribute('width', canvasWidth);
@@ -5,7 +19,7 @@ canvas.setAttribute('height', canvasHeight);
 canvas.setAttribute('id', 'canvas');
 canvasDiv.appendChild(canvas);
 if(typeof G_vmlCanvasManager != 'undefined') {
-	canvas = G_vmlCanvasManager.initElement(canvas);
+  canvas = G_vmlCanvasManager.initElement(canvas);
 }
 context = canvas.getContext("2d");
 
@@ -21,14 +35,26 @@ function addClick(x, y, dragging)
   clickDrag.push(dragging);
 }
 
+function removeClick(x , y, dragging){
+  indexX = clickX.indexOf(x);
+  indexY = clickY.indexOf(y);
+  indexDrag = clickDrag.indexOf(dragging);
+  if (indexX == indexY){
+    delete clickX[indexX];
+    delete clickY[indexY];
+    clickDrag.splice(indexDrag, 1);
+  }
+  
+}
+
 function redraw(){
   context.clearRect(0, 0, context.canvas.width, context.canvas.height); // Clears the canvas
   
   context.strokeStyle = "#df4b26";
   context.lineJoin = "round";
   context.lineWidth = 5;
-			
-  for(var i=0; i < clickX.length; i++) {		
+      
+  for(var i=0; i < clickX.length; i++) {    
     context.beginPath();
     if(clickDrag[i] && i){
       context.moveTo(clickX[i-1], clickY[i-1]);
@@ -41,18 +67,38 @@ function redraw(){
   }
 }
 
+function erase(){
+
+  isErase = true;
+  isDraw = false;
+  isClear = false;
+}
+
+function draw(){
+  isDraw = true;
+  isErase = false;
+}
+
+
 $('#canvas').mousedown(function(e){
   var mouseX = e.pageX - this.offsetLeft;
   var mouseY = e.pageY - this.offsetTop;
-		
   paint = true;
-  addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop);
+  if (isErase == true){
+    removeClick(mouseX, mouseY);
+  }else{
+    addClick(mouseX, mouseY);
+  }
   redraw();
 });
 
 $('#canvas').mousemove(function(e){
   if(paint){
-    addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+    if (isErase == true){
+      removeClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+    }else{
+      addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
+    }
     redraw();
   }
 });
